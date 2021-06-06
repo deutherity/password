@@ -4,8 +4,11 @@ project(password)
 
 set(SOURCES hex.cpp Password.cpp)
 add_library(${PROJECT_NAME} ${SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/headers)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/pwdgen)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/headers)
+add_subdirectory(pwdgen)
 target_link_libraries(${PROJECT_NAME} pwdgen)
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

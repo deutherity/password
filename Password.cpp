@@ -7,9 +7,10 @@
 #include <cstring>
 
 template <typename CharT>
-Password<CharT>::Password(str_t &&service, const int id, str_t &&description,
-                          str_t &&t_add_alphabet)
+Password<CharT>::Password(str_t &&service, const int id, std::uint16_t length, str_t &&description,
+                          std::string &&t_add_alphabet)
     : m_service(std::move(service)), m_id(id),
+      m_length(length),
       m_add_alphabet(std::move(t_add_alphabet)),
       m_description(std::move(description)) {}
 
@@ -18,6 +19,7 @@ Password<CharT> &Password<CharT>::operator=(const Password<CharT> &other) {
     m_service = other.m_service;
     std::memcpy(m_salt, other.m_salt, other.m_saltlen);
     m_saltlen = other.m_saltlen;
+    m_length = other.m_length;
     m_description = other.m_description;
     m_id = other.m_id;
 }
@@ -27,6 +29,7 @@ Password<CharT> &Password<CharT>::operator=(Password<CharT> &&other) noexcept {
     m_service = std::move(other.m_service);
     m_salt = other.m_salt;
     m_saltlen = other.m_saltlen;
+    m_length = other.m_length;
     m_description = std::move(other.m_description);
     m_id = other.m_id;
     other.m_salt = nullptr;
@@ -38,6 +41,7 @@ template <typename CharT>
 Password<CharT>::Password(Password<CharT> &&other) noexcept
     : m_service(std::move(other.m_service)), m_salt(other.m_salt),
       m_saltlen(other.m_saltlen), m_description(std::move(other.m_description)),
+      m_length(other.m_length),
       m_id(other.m_id) {
     other.m_salt = nullptr;
     other.m_saltlen = 0;
@@ -47,6 +51,7 @@ Password<CharT>::Password(Password<CharT> &&other) noexcept
 template <typename CharT>
 Password<CharT>::Password(const Password<CharT> &other)
     : m_service(other.m_service), m_saltlen(other.m_saltlen),
+      m_length(other.m_length),
       m_description(other.m_description), m_id(other.m_id) {
     if (m_saltlen) {
         m_salt = new uchar[m_saltlen];
@@ -67,7 +72,7 @@ template <typename CharT>
 std::basic_istream<CharT> &operator>>(std::basic_istream<CharT> &input,
                                       Password<CharT> &that) {
     short has_salt;
-    input >> that.m_id >> QuotedInput(that.m_service) >> has_salt >>
+    input >> that.m_id >> that.m_length >> QuotedInput(that.m_service) >> has_salt >>
         QuotedInput(that.m_description) >> QuotedInput(that.m_add_alphabet);
     if (has_salt) {
         char saltbuf[SALTLEN * 2 + 1];
@@ -85,7 +90,7 @@ std::basic_istream<CharT> &operator>>(std::basic_istream<CharT> &input,
 template <typename CharT>
 std::basic_ostream<CharT> &operator<<(std::basic_ostream<CharT> &output,
                                       const Password<CharT> &that) {
-    output << that.m_id << ' ' << QuotedOutput<CharT>(that.m_service) << ' '
+    output << that.m_id << ' ' << that.m_length << ' ' << QuotedOutput<CharT>(that.m_service) << ' '
            << ((that.m_saltlen) ? 1 : 0) << '\n';
     output << QuotedOutput<CharT>(that.m_description) << '\n'
            << QuotedOutput(that.m_add_alphabet);
@@ -125,7 +130,12 @@ template <typename CharT> const uchar *Password<CharT>::getSalt() const {
 
 template <typename CharT>
 std::string
-Password<CharT>::cook(const std::basic_string_view<CharT> &passwd) const {
+Password<CharT>::cook(std::basic_string<CharT> &&passwd) const {
 
-    return "YEP COOK";
+    std::basic_string<CharT> data;
+    data.reserve(40);
+    data += std::to_string(this->m_id);
+    data += this->m_service;
+    data += std::move(passwd);
+    return genpw(std::string_view(data), m_length, std::string_view(m_add_alphabet), m_salt, m_saltlen);
 }

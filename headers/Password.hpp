@@ -4,6 +4,7 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <cstdint>
 
 template <typename CharT = char> struct Password {
   private:
@@ -14,13 +15,14 @@ template <typename CharT = char> struct Password {
     str_t m_service;
     std::size_t m_saltlen = 0;
     int m_id = -1;
-    str_t m_add_alphabet;
+    std::uint16_t m_length = 14;
+    std::string m_add_alphabet;
     str_t m_description;
 
     Password() = default;
 
-    Password(str_t &&service, const int id, str_t &&description = "",
-             str_t &&t_add_alphabet = "");
+    Password(str_t &&service, const int id, std::uint16_t length = 14, str_t &&description = "",
+             std::string &&t_add_alphabet = "");
     Password(Password &&other) noexcept;
     Password(const Password &other);
     ~Password();
@@ -30,7 +32,7 @@ template <typename CharT = char> struct Password {
     const uchar *getSalt() const;
     void moveSalt(uchar *t_salt, const std::size_t t_saltlen);
     bool valid() const { return m_id != -1; }
-    std::string cook(const std::basic_string_view<CharT> &realpwd) const;
+    std::string cook(std::basic_string<CharT> &&realpwd) const;
     void makeSalt();
     void setSalt(const uchar *t_salt, const std::size_t t_saltlen);
 };
