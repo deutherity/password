@@ -31,7 +31,9 @@ template <typename CharT = char> struct Password {
     Password &operator=(const Password<CharT> &other);
     const uchar *getSalt() const;
     void moveSalt(uchar *t_salt, const std::size_t t_saltlen);
-    bool valid() const { return m_id != -1; }
+    bool valid() const { return m_id > -1 && m_length > 0; }
+    void devalidate() { m_length = -1; }
+    std::basic_string<CharT> pretty() const;
     std::string cook(std::basic_string<CharT> &&realpwd) const;
     void makeSalt();
     void setSalt(const uchar *t_salt, const std::size_t t_saltlen);

@@ -66,6 +66,14 @@ template <typename CharT> void Password<CharT>::makeSalt() {
     this->m_saltlen = foo.saltlen;
 }
 
+template <typename CharT> typename Password<CharT>::str_t Password<CharT>::pretty() const {
+    str_t res = "Id: " + std::to_string(this->m_id) + " - " + ((m_saltlen)?"Salted":"No salt") + 
+        "\nService: " + this->m_service +
+        "\nDescription:\n" + this->m_description; 
+    return std::move(res);
+}
+
+
 template <typename CharT> Password<CharT>::~Password() { delete[] m_salt; }
 
 template <typename CharT>
