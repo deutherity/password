@@ -15,8 +15,8 @@ class QuotedOutput {
     QuotedOutput(QuotedOutput<CharT> && t_other) noexcept = default;
     QuotedOutput(const QuotedOutput<CharT> & t_other) noexcept = default;
     QuotedOutput<CharT> & operator= (const QuotedOutput<CharT> & t_other)
-    noexcept = default; QuotedOutput<CharT> & operator= (QuotedOutput<CharT> &&
-    t_other) noexcept = default;
+    noexcept = default; QuotedOutput<CharT> & operator= (QuotedOutput<CharT>
+    && t_other) noexcept = default;
     */
     /*
     std::basic_string<CharT> getBuffer() const noexcept { return m_buffer; }

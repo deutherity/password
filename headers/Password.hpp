@@ -1,10 +1,10 @@
 #pragma once
 #include "const_password.hpp"
+#include <cstdint>
 #include <istream>
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <cstdint>
 
 template <typename CharT = char> struct Password {
   private:
@@ -21,8 +21,8 @@ template <typename CharT = char> struct Password {
 
     Password() = default;
 
-    Password(str_t &&service, const int id, std::uint16_t length = 14, str_t &&description = "",
-             std::string &&t_add_alphabet = "");
+    Password(str_t &&service, const int id, std::uint16_t length = 14,
+             str_t &&description = "", std::string &&t_add_alphabet = "");
     Password(Password &&other) noexcept;
     Password(const Password &other);
     ~Password();
